@@ -42,15 +42,13 @@ module {
         0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19,
     ];
 
-    // Calculate a SHA256 hash.
-    public func sha256(data : Blob) : Blob {
-        let digest = Digest();
-        let _ = digest.write(data.vals());
-        return digest.sum();
+    // Calculate a SHA256 hash from Blob.
+    public func sha256_blob(data : Blob) : Blob {
+        return sha256(data.vals());
     };
 
-    // Calculate a SHA256 hash.
-    public func sha256_fromIter(iter : Iter.Iter<Nat8>) : Blob {
+    // Calculate a SHA256 hash from Iter.
+    public func sha256(iter : Iter.Iter<Nat8>) : Blob {
         let digest = Digest();
         let _ = digest.write(iter);
         return digest.sum();
@@ -96,6 +94,7 @@ module {
     private var len : Nat = 0;
     private let state : [var Nat32] = Array.thaw<Nat32>(S);
     private let buffer : BlockBuffer<Nat8> = BlockBuffer(64, 0:Nat8);
+    private let rot = Nat32.bitrotRight;
 
     public func reset() {
         len := 0;
@@ -125,10 +124,13 @@ module {
         bytes_read
     };
 
+    // array for message schedule
+    private let w = Array.init<Nat32>(64, 0);
+
     // hash one block
     private func block(data : [Nat8]) {
         assert data.size() == 64;
-        var w = Array.init<Nat32>(64, 0);
+        // copy block to words
         for (i in Iter.range(0, 15)) {
             w[i] :=
                 Nat32.fromIntWrap(Nat8.toNat(data[4*i + 0])) << 24 |
@@ -136,13 +138,14 @@ module {
                 Nat32.fromIntWrap(Nat8.toNat(data[4*i + 2])) << 08 |
                 Nat32.fromIntWrap(Nat8.toNat(data[4*i + 3])) << 00;
         };
-        let rot = Nat32.bitrotRight;
+        // expand message
         for (i in Iter.range(16, 63)) {
           let (v0, v1) = (w[i - 15], w[i - 02]);
           let s0 = rot(v0, 07) ^ rot(v0, 18) ^ (v0 >> 03);
           let s1 = rot(v1, 17) ^ rot(v1, 19) ^ (v1 >> 10);
           w[i] := w[i - 16] +% s0 +% w[i - 07] +% s1;
         };
+        // compress
         var a = state[0];
         var b = state[1];
         var c = state[2];
@@ -166,6 +169,7 @@ module {
           b := a;
           a := t +% ma +% sigma0;
         };
+        // final addition
         state[0] +%= a;
         state[1] +%= b;
         state[2] +%= c;
@@ -224,3 +228,4 @@ module {
     };
   }; // class Digest
 };
+
