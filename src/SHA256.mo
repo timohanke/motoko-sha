@@ -126,24 +126,99 @@ module {
 
     // array for message schedule
     private let w = Array.init<Nat32>(64, 0);
+    private let expansion_rounds = [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63];
+    private let compression_rounds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63];
 
     // hash one block
     private func block(data : [Nat8]) {
         assert data.size() == 64;
         // copy block to words
-        for (i in Iter.range(0, 15)) {
-            w[i] :=
-                Nat32.fromIntWrap(Nat8.toNat(data[4*i + 0])) << 24 |
-                Nat32.fromIntWrap(Nat8.toNat(data[4*i + 1])) << 16 |
-                Nat32.fromIntWrap(Nat8.toNat(data[4*i + 2])) << 08 |
-                Nat32.fromIntWrap(Nat8.toNat(data[4*i + 3])) << 00;
-        };
+        w[0] :=
+            Nat32.fromIntWrap(Nat8.toNat(data[0])) << 24 |
+            Nat32.fromIntWrap(Nat8.toNat(data[1])) << 16 |
+            Nat32.fromIntWrap(Nat8.toNat(data[2])) << 08 |
+            Nat32.fromIntWrap(Nat8.toNat(data[3])) << 00;
+        w[1] :=
+            Nat32.fromIntWrap(Nat8.toNat(data[4])) << 24 |
+            Nat32.fromIntWrap(Nat8.toNat(data[5])) << 16 |
+            Nat32.fromIntWrap(Nat8.toNat(data[6])) << 08 |
+            Nat32.fromIntWrap(Nat8.toNat(data[7])) << 00;
+        w[2] :=
+            Nat32.fromIntWrap(Nat8.toNat(data[8])) << 24 |
+            Nat32.fromIntWrap(Nat8.toNat(data[9])) << 16 |
+            Nat32.fromIntWrap(Nat8.toNat(data[10])) << 08 |
+            Nat32.fromIntWrap(Nat8.toNat(data[11])) << 00;
+        w[3] :=
+            Nat32.fromIntWrap(Nat8.toNat(data[12])) << 24 |
+            Nat32.fromIntWrap(Nat8.toNat(data[13])) << 16 |
+            Nat32.fromIntWrap(Nat8.toNat(data[14])) << 08 |
+            Nat32.fromIntWrap(Nat8.toNat(data[15])) << 00;
+        w[4] :=
+            Nat32.fromIntWrap(Nat8.toNat(data[16])) << 24 |
+            Nat32.fromIntWrap(Nat8.toNat(data[17])) << 16 |
+            Nat32.fromIntWrap(Nat8.toNat(data[18])) << 08 |
+            Nat32.fromIntWrap(Nat8.toNat(data[19])) << 00;
+        w[5] :=
+            Nat32.fromIntWrap(Nat8.toNat(data[20])) << 24 |
+            Nat32.fromIntWrap(Nat8.toNat(data[21])) << 16 |
+            Nat32.fromIntWrap(Nat8.toNat(data[22])) << 08 |
+            Nat32.fromIntWrap(Nat8.toNat(data[23])) << 00;
+        w[6] :=
+            Nat32.fromIntWrap(Nat8.toNat(data[24])) << 24 |
+            Nat32.fromIntWrap(Nat8.toNat(data[25])) << 16 |
+            Nat32.fromIntWrap(Nat8.toNat(data[26])) << 08 |
+            Nat32.fromIntWrap(Nat8.toNat(data[27])) << 00;
+        w[7] :=
+            Nat32.fromIntWrap(Nat8.toNat(data[28])) << 24 |
+            Nat32.fromIntWrap(Nat8.toNat(data[29])) << 16 |
+            Nat32.fromIntWrap(Nat8.toNat(data[30])) << 08 |
+            Nat32.fromIntWrap(Nat8.toNat(data[31])) << 00;
+        w[8] :=
+            Nat32.fromIntWrap(Nat8.toNat(data[32])) << 24 |
+            Nat32.fromIntWrap(Nat8.toNat(data[33])) << 16 |
+            Nat32.fromIntWrap(Nat8.toNat(data[34])) << 08 |
+            Nat32.fromIntWrap(Nat8.toNat(data[35])) << 00;
+        w[9] :=
+            Nat32.fromIntWrap(Nat8.toNat(data[36])) << 24 |
+            Nat32.fromIntWrap(Nat8.toNat(data[37])) << 16 |
+            Nat32.fromIntWrap(Nat8.toNat(data[38])) << 08 |
+            Nat32.fromIntWrap(Nat8.toNat(data[39])) << 00;
+        w[10] :=
+            Nat32.fromIntWrap(Nat8.toNat(data[40])) << 24 |
+            Nat32.fromIntWrap(Nat8.toNat(data[41])) << 16 |
+            Nat32.fromIntWrap(Nat8.toNat(data[42])) << 08 |
+            Nat32.fromIntWrap(Nat8.toNat(data[43])) << 00;
+        w[11] :=
+            Nat32.fromIntWrap(Nat8.toNat(data[44])) << 24 |
+            Nat32.fromIntWrap(Nat8.toNat(data[45])) << 16 |
+            Nat32.fromIntWrap(Nat8.toNat(data[46])) << 08 |
+            Nat32.fromIntWrap(Nat8.toNat(data[47])) << 00;
+        w[12] :=
+            Nat32.fromIntWrap(Nat8.toNat(data[48])) << 24 |
+            Nat32.fromIntWrap(Nat8.toNat(data[49])) << 16 |
+            Nat32.fromIntWrap(Nat8.toNat(data[50])) << 08 |
+            Nat32.fromIntWrap(Nat8.toNat(data[51])) << 00;
+        w[13] :=
+            Nat32.fromIntWrap(Nat8.toNat(data[52])) << 24 |
+            Nat32.fromIntWrap(Nat8.toNat(data[53])) << 16 |
+            Nat32.fromIntWrap(Nat8.toNat(data[54])) << 08 |
+            Nat32.fromIntWrap(Nat8.toNat(data[55])) << 00;
+        w[14] :=
+            Nat32.fromIntWrap(Nat8.toNat(data[56])) << 24 |
+            Nat32.fromIntWrap(Nat8.toNat(data[57])) << 16 |
+            Nat32.fromIntWrap(Nat8.toNat(data[58])) << 08 |
+            Nat32.fromIntWrap(Nat8.toNat(data[59])) << 00;
+        w[15] :=
+            Nat32.fromIntWrap(Nat8.toNat(data[60])) << 24 |
+            Nat32.fromIntWrap(Nat8.toNat(data[61])) << 16 |
+            Nat32.fromIntWrap(Nat8.toNat(data[62])) << 08 |
+            Nat32.fromIntWrap(Nat8.toNat(data[63])) << 00;
         // expand message
-        for (i in Iter.range(16, 63)) {
-          let (v0, v1) = (w[i - 15], w[i - 02]);
+        for (i in expansion_rounds.keys()) {
+          let (v0, v1) = (w[i + 1], w[i + 14]);
           let s0 = rot(v0, 07) ^ rot(v0, 18) ^ (v0 >> 03);
           let s1 = rot(v1, 17) ^ rot(v1, 19) ^ (v1 >> 10);
-          w[i] := w[i - 16] +% s0 +% w[i - 07] +% s1;
+          w[i+16] := w[i] +% s0 +% w[i + 09] +% s1;
         };
         // compress
         var a = state[0];
@@ -154,7 +229,7 @@ module {
         var f = state[5];
         var g = state[6];
         var h = state[7];
-        for (i in Iter.range(0, 63)) {
+        for (i in compression_rounds.keys()) {
           let ch = (e & f) ^ (^ e & g);
           let ma = (a & b) ^ (a & c) ^ (b & c);
           let sigma0 = rot(a, 02) ^ rot(a, 13) ^ rot(a, 22);
@@ -228,4 +303,3 @@ module {
     };
   }; // class Digest
 };
-
