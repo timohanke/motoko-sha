@@ -1,3 +1,5 @@
+*DEPRECATED in favor of https://mops.one/sha2 / https://github.com/research-ag/sha2 which has much better performance.*
+
 ## The SHA Package
 
 [![Build Status](https://github.com/enzoh/motoko-sha/workflows/build/badge.svg)](https://github.com/enzoh/motoko-sha/actions?query=workflow%3Abuild)
